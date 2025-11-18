@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Event Registration : Global Tech Connect</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #e6e6e6;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            padding: 10px;
+        }
+
+        .right-align {
+            text-align: right;
+            font-weight: bold;
+            width: 35%;
+        }
+
+        input, select {
+            padding: 8px;
+            width: 90%;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+
+        #statsPanel {
+            margin-top: 20px;
+            padding: 15px;
+            display: none;
+            background: #f9f9f9;
+            border-left: 4px solid #333;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Global Tech Connect : Event Registration</h2>
+
+        <form id="regForm">
+
+            <table>
+                <tr>
+                    <td class="right-align">Full Name</td>
+                    <td>
+                        <input type="text" id="fullName" placeholder="Enter your full name">
+                        <div id="nameErr" class="error"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="right-align">Professional Email</td>
+                    <td>
+                        <input type="text" id="email" placeholder="Enter your email">
+                        <div id="emailErr" class="error"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="right-align">Company/Institution</td>
+                    <td>
+                        <input type="text" id="company" placeholder="Your company (optional)">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="right-align">Attendance Type</td>
+                    <td>
+                        <input type="radio" name="attend" value="Virtual"> Virtual
+                        <input type="radio" name="attend" value="In-Person"> In-Person
+                        <div id="attendErr" class="error"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td><button type="submit">Register</button></td>
+                </tr>
+            </table>
+        </form>
+
+        <br>
+
+        <button id="toggleStats">Show Event Analytics</button>
+
+        <div id="statsPanel">
+            <h3>Event Analytics</h3>
+            <p>Total Registrants: <span id="totalCount">0</span></p>
+            <p>Virtual Attendees: <span id="virtualCount">0</span></p>
+            <p>In-Person Attendees: <span id="inpersonCount">0</span></p>
+        </div>
+
+    </div>
+
+    <script>
+        let registrations = [];
+
+        function validateName(name) {
+            return name.length >= 6 && name.length <= 100;
+        }
+
+
+        function validateEmail(email) {
+    if (!email.includes("@")) return false;
+
+    let parts = email.split("@");
+    if (parts.length !== 2) return false;
+
+    let username = parts[0];
+    let domain = parts[1];
+
+    if (username.length < 1) return false;
+    if (!domain.includes(".")) return false;
+
+    let domainParts = domain.split(".");
+    if (domainParts.length < 2) return false;
+    if (domainParts[0].length < 1) return false;
+    if (domainParts[1].length < 2) return false;
+
+    return true;
+}
+
+
+        document.getElementById("regForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            let fullName = document.getElementById("fullName").value.trim();
+            let email = document.getElementById("email").value.trim();
+            let company = document.getElementById("company").value.trim();
+            let attendance = document.querySelector("input[name='attend']:checked");
+
+            let valid = true;
+
+            if (!validateName(fullName)) {
+                document.getElementById("nameErr").innerText = "Name must be between 6 and 100 characters.";
+                valid = false;
+            } else {
+                document.getElementById("nameErr").innerText = "";
+            }
+
+            if (!validateEmail(email)) {
+                document.getElementById("emailErr").innerText = "Please enter a valid professional email address.";
+                valid = false;
+            } else {
+                document.getElementById("emailErr").innerText = "";
+            }
+
+            if (!attendance) {
+                document.getElementById("attendErr").innerText = "Please select your attendance type.";
+                valid = false;
+            } else {
+                document.getElementById("attendErr").innerText = "";
+            }
+
+            if (!valid) return;
+
+            registrations.push({
+                name: fullName,
+                email: email,
+                company: company,
+                attendance: attendance.value
+            });
+
+            alert("Registration successful!");
+            updateStats();
+        });
+
+        function updateStats() {
+            document.getElementById("totalCount").innerText = registrations.length;
+
+            let virtual = registrations.filter(x => x.attendance === "Virtual").length;
+            let inperson = registrations.filter(x => x.attendance === "In-Person").length;
+
+            document.getElementById("virtualCount").innerText = virtual;
+            document.getElementById("inpersonCount").innerText = inperson;
+        }
+
+        document.getElementById("toggleStats").addEventListener("click", function () {
+            let panel = document.getElementById("statsPanel");
+
+            if (panel.style.display === "none") {
+                panel.style.display = "block";
+                this.innerText = "Hide Event Analytics";
+            } else {
+                panel.style.display = "none";
+                this.innerText = "Show Event Analytics";
+            }
+        });
+    </script>
+
+</body>
+
+</html>
+
+
+
+
